@@ -1,0 +1,17 @@
+{
+  "name": "ai-mini-hagen",
+  "packageManager": "yarn@3.6.1",
+  "type": "module",
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
+    "openai": "^4.24.1"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}
