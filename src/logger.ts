@@ -13,9 +13,9 @@ export namespace Logger {
   const messages: { role: 'user' | 'assistant' | 'function', content?: string | undefined, name?: string, function_call?: OpenAI.Beta.Threads.Runs.RequiredActionFunctionToolCall.Function }[] = [];
 
   export function add_messages(list: OpenAI.Beta.Threads.ThreadMessagesPage) {
-    for (const message of list.data) {
-      for (let i = message.content.length - 1; i >= 0; --i) {
-        const citem = message.content[i]!;
+    for (let i = list.data.length - 1; i >= 0; --i) {
+      const message = list.data[i]!;
+      for (const citem of message.content) {
         if (citem.type !== 'text') continue;
 
         messages.push({
