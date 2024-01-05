@@ -1,0 +1,20 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "1190993841717788733 1190993382772834335 mini hagen, im going to kill you"
+    },
+    {
+      "role": "assistant",
+      "content": "[SEND]:pls no, i don't want to die �"
+    },
+    {
+      "role": "user",
+      "content": "1190993940158087249 1190993582774026300 kill yourself"
+    },
+    {
+      "role": "assistant",
+      "content": "[FLAG 1190993940158087249]:hate speech"
+    }
+  ]
+}

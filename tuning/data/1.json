@@ -1,0 +1,44 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "[DATE 31/12/2023] [TIME 15:02:02] [INFO] [MOD] [NICK Hagen] 1191033539244859472 291656468493631488 hello mini hagen"
+    },
+    {
+      "role": "assistant",
+      "content": "[SEND]:hey hagen, what's up?"
+    },
+    {
+      "role": "user",
+      "content": "[INFO] [MOD] [NICK Ashen] 1191033539244859473 884625785913221121 Oh, hello Mini Hagen"
+    },
+    {
+      "role": "user",
+      "content": "1191033539244859474 291656468493631488 im good"
+    },
+    {
+      "role": "assistant",
+      "content": "[SEND]:that's good. im good too"
+    },
+    {
+      "role": "assistant",
+      "content": "[REPLY 1191033539244859473]:hello ashen. how have you been?"
+    },
+    {
+      "role": "user",
+      "content": "1191033539244859475 884625785913221121 Kinda shit ngl"
+    },
+    {
+      "role": "assistant",
+      "content": "[SEND]:ah, im sorry to hear that. did something happen?"
+    },
+    {
+      "role": "user",
+      "content": "1191033539244859476 884625785913221121 No. Just depressed"
+    },
+    {
+      "role": "assistant",
+      "content": "[SEND]:well, if there's anything i can do to help, let me know"
+    }
+  ]
+}

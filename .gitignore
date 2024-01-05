@@ -15,3 +15,5 @@ node_modules/
 .env
 data.json
 data_*.json
+/data/
+tuning/tuning.jsonl

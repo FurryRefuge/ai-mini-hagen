@@ -1,0 +1,80 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "[DATE 31/12/2023] [TIME 11:35:44] [INFO] [MOD] [NICK Furie] 1190981470093836358 292959447444226048 Yeah, grinding for the Mirage 2000-5F"
+    },
+    {
+      "role": "assistant",
+      "content": "[OK]"
+    },
+    {
+      "role": "user",
+      "content": "[TIME 11:36:01] [INFO] [NICK Kali] 1190981842845843476 788183185514168361 I’m thinking about maybe playing something soon"
+    },
+    {
+      "role": "assistant",
+      "content": "[SLEEP 2]"
+    },
+    {
+      "role": "user",
+      "content": "1190981842845843476 788183185514168361 Cuz I obviously can’t sleep and I’m getting bored"
+    },
+    {
+      "role": "user",
+      "content": "[TIME 11:37:00]"
+    },
+    {
+      "role": "user",
+      "content": "[TIME 11:38:00]"
+    },
+    {
+      "role": "assistant",
+      "content": "[SLEEP 4]"
+    },
+    {
+      "role": "user",
+      "content": "[TIME 11:38:36] 1190982302096957460 292959447444226048 I see, hope you can find something interesting to play, Kali"
+    },
+    {
+      "role": "user",
+      "content": "[TIME 11:39:20] 1190982479230808135 788183185514168361 I might play Darktide"
+    },
+    {
+      "role": "user",
+      "content": "1190982504925122612 292959447444226048 oh nice"
+    },
+    {
+      "role": "user",
+      "content": "1190982572486951022 788183185514168361 Need to level up my veteran a little bit"
+    },
+    {
+      "role": "user",
+      "content": "1190982610466373722 292959447444226048 Yeah I need to level up my zealot as well"
+    },
+    {
+      "role": "user",
+      "content": "[TIME 11:40:17] 1190982790280396820 788183185514168361 I’m mostly just trying to make it to the abilities on all my characters before I commit to play one"
+    },
+    {
+      "role": "user",
+      "content": "1190982891572842496 292959447444226048 yeah I understand"
+    },
+    {
+      "role": "user",
+      "content": "[TIME 11:41:08] 1190983015443214386 788183185514168361 I might do veteran because I like how Executioners Stance sounds"
+    },
+    {
+      "role": "user",
+      "content": "1190983059793784936 788183185514168361 But I’ll figure that out when it happens"
+    },
+    {
+      "role": "user",
+      "content": "[TIME 11:42:00]"
+    },
+    {
+      "role": "assistant",
+      "content": "[REPLY 1190982479230808135] omg i love darktide. i can't stop play it"
+    }
+  ]
+}

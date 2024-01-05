@@ -3,6 +3,10 @@ import { Data, data } from './data.js';
 import { setTimeout } from 'node:timers/promises';
 import { inspect } from 'node:util';
 import fs from 'node:fs';
+import { Functions } from './functions.js';
+import assert from 'node:assert/strict';
+import path from 'node:path';
+import { Logger } from './logger.js';
 
 // import { inspect } from 'node:util';
 
@@ -12,13 +16,17 @@ if (!data.assistant_id) {
   console.warn('no assitantid. creating...');
   const assistant = await openai.beta.assistants.create({
     name: 'Mini Hagen',
-    instructions: fs.readFileSync('./persona.txt', 'utf8'),
+    instructions: fs.readFileSync(path.join(__rootname, 'src', 'persona.txt'), 'utf8'),
     model: 'gpt-3.5-turbo-1106',
+    tools: [{ type: 'retrieval' }, ...Functions.tools],
   });
 
   data.assistant_id = assistant.id;
   Data.write();
 }
+
+/* @ts-expect-error */
+Functions.tools = undefined;
 
 if (!data.thread_id) {
   console.warn('no threadid. creating...');
@@ -36,11 +44,11 @@ export namespace Chat {
     export let count = 0;
     export let pending_count_for_run = 0;
     export async function create(body: OpenAI.Beta.Threads.Messages.MessageCreateParams) {
-      console.debug('sent message', body);
       await setTimeout(50);
       while (Run.active) await setTimeout(500);
       ++pending_count_for_run;
       ++count;
+      console.debug('sent message', body);
       const msg = await openai.beta.threads.messages.create(thread_id, body);
       --count;
       return msg;
@@ -85,7 +93,44 @@ export namespace Chat {
       switch (run.status) {
         case 'queued':
         case 'in_progress': return false;
-        case 'requires_action':
+        case 'requires_action': {
+          const { required_action } = run;
+          assert.ok(required_action !== null);
+
+          Logger.add_tool_calls(required_action.submit_tool_outputs.tool_calls);
+
+          (async () => {
+            const tool_outputs: (OpenAI.Beta.Threads.Runs.RunSubmitToolOutputsParams.ToolOutput & { name: string })[] = [];
+
+            const _ = async (call: OpenAI.Beta.Threads.Runs.RequiredActionFunctionToolCall) => {
+              const func = Functions.mapping[call.function.name];
+              if (!func) return void console.error('incorrect function tool name', run);
+
+              const res = await func(JSON.parse(call.function.arguments));
+
+              tool_outputs.push({
+                name: call.function.name,
+                tool_call_id: call.id,
+                output: res ?? 'done',
+              });
+            }
+
+            for (const call of required_action.submit_tool_outputs.tool_calls)
+              await _(call);
+
+            Logger.add_tool_outputs(tool_outputs);
+
+            if (tool_outputs.length) {
+              for (const output of tool_outputs)
+                /* @ts-expect-error */
+                delete output.name;
+
+              await openai.beta.threads.runs.submitToolOutputs(data.thread_id, run.id, { tool_outputs });
+            }
+          })();
+
+          return false;
+        }
         case 'cancelling':
         case 'cancelled':
         case 'failed':

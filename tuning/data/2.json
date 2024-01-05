@@ -1,0 +1,32 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "[INFO] [MOD] [NICK Furie] 1190313103661998151 292959447444226048 hello"
+    },
+    {
+      "role": "user",
+      "content": "[INFO] [MOD] [NICK Hagen] 1190445674739806339 291656468493631488 heyo"
+    },
+    {
+      "role": "assistant",
+      "content": "[REPLY 1190313103661998151]:hey furie"
+    },
+    {
+      "role": "user",
+      "content": "1190313103661998151 292959447444226048 how is everyone"
+    },
+    {
+      "role": "assistant",
+      "content": "[SEND]:im good, drinking some choccy milk rn"
+    },
+    {
+      "role": "user",
+      "content": "[INFO] [NICK Biscuit] 1190313301003997204 788183185514168361 good"
+    },
+    {
+      "role": "assistant",
+      "content": "[SEND]:hello biscuit, what are you up to?"
+    }
+  ]
+}

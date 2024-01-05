@@ -1,24 +1,14 @@
-import { Client, GatewayIntentBits, TextChannel } from 'discord.js';
+import type { TextChannel } from 'discord.js';
 import { Chat } from './chat.js';
 import { Data, data } from './data.js';
 import { Time } from './time.js';
-
-const client = new Client({
-  intents: 0
-    | GatewayIntentBits.Guilds
-    | GatewayIntentBits.GuildMessages
-    | GatewayIntentBits.MessageContent
-  ,
-});
-
-client.once('ready', () => {
-  console.log(`Logged in as ${client.user!.tag}!`);
-});
+import { Logger } from './logger.js';
+import { Discord } from './discord.js';
 
 const did_info_command = new Set();
 const per_user_ratelimit = new Map();
 
-client.on('messageCreate', message => {
+Discord.client.on('messageCreate', message => {
   if (message.channelId !== '645783743423840277') return;
   if (message.author.bot) return;
   if (!message.content || message.content.length <= 1 || message.content.length >= 512) return;
@@ -38,14 +28,14 @@ client.on('messageCreate', message => {
     text += `[TIME ${Time.time()}] `
 
   if (message.reference && message.reference.messageId !== undefined) {
-    if (message.channel.messages.cache.get(message.reference.messageId)?.author.id === client.user!.id)
+    if (message.channel.messages.cache.get(message.reference.messageId)?.author.id === Discord.client.user!.id)
       text += '[YOU] ';
     else
-      text += `[REPLY ${message.reference.messageId}]`
+      text += `[REPLY ${message.reference.messageId}] `
   }
 
   if (!did_info_command.has(message.author.id)) {
-    text = '[INFO] ';
+    text += '[INFO] ';
     if (message.member.roles.cache.has('645783680295370758'))
       text += '[MOD] ';
     text += `[NICK ${message.member.displayName}] `;
@@ -61,6 +51,7 @@ let sleep_time = 0;
 
 async function process_responses() {
   const list = await Chat.Message.list(data.last_object_id ? { before: data.last_object_id } : undefined);
+  Logger.add_messages(list);
   const raw: string[] = [];
   data.last_object_id = list.data[0]?.id as string;
 
@@ -72,7 +63,7 @@ async function process_responses() {
     raw.push(content)
   }
 
-  if (raw.length === 0) return void console.warn('no answer received', list.data);
+  if (raw.length === 0) return void console.warn('no answer received');
   console.debug('raw responses:', raw);
 
   for (let i = raw.length - 1; i !== -1; --i) {
@@ -81,6 +72,7 @@ async function process_responses() {
 
     loop: while (text[0] === '[') {
       const end = text.indexOf(']');
+      if (end === -1) break loop;
       const parts = text.substring(1, end).split(' ');
 
       switch (parts[0]) {
@@ -94,9 +86,10 @@ async function process_responses() {
 
           const msg_id = parts[1]!;
           const colon = text.indexOf(':', 1 + end);
+          if (colon === -1) break loop;
           const content = text.substring(1 + colon);
           text = text.substring(0, colon);
-          await (client.channels.cache.get('645783743423840277') as TextChannel).send({
+          await (Discord.client.channels.cache.get('645783743423840277') as TextChannel).send({
             reply: { messageReference: msg_id },
             content,
             allowedMentions: {
@@ -110,11 +103,12 @@ async function process_responses() {
         case 'SEND': {
           if (parts.length !== 1) break loop;
           const colon = text.indexOf(':', 1 + end);
+          if (colon === -1) break loop;
           const content = text.substring(1 + colon);
           text = text.substring(0, colon);
           if (content.length === 0) break loop;
 
-          await (client.channels.cache.get('645783743423840277') as TextChannel).send({
+          await (Discord.client.channels.cache.get('645783743423840277') as TextChannel).send({
             content,
             allowedMentions: {
               roles: [],
@@ -136,8 +130,33 @@ async function process_responses() {
           if (parts.length !== 3) break loop;
 
           const [, messageid, emoji] = parts as [string, string, string];
-          await (client.channels.cache.get('645783743423840277') as TextChannel).messages.cache.get(messageid)?.react(emoji)
+          await (Discord.client.channels.cache.get('645783743423840277') as TextChannel).messages.cache.get(messageid)?.react(emoji)
             .catch(console.error);
+          break;
+        }
+
+        case 'FLAG': {
+          if (parts.length !== 2) break loop;
+
+          const messageid = parts[1]!;
+          const colon = text.indexOf(':', 1 + end);
+          let content;
+          if (colon !== -1) {
+            content = text.substring(1 + colon);
+            text = text.substring(0, colon);
+          }
+
+          await (Discord.client.channels.cache.get('645783743423840277') as TextChannel).send({
+            content: `flagged this message.${content ? ` reason: ${content}` : ''}`,
+            reply: {
+              failIfNotExists: false,
+              messageReference: messageid,
+            },
+            allowedMentions: {
+              roles: [],
+              users: [],
+            }
+          }).catch(console.error);
           break;
         }
       }
@@ -147,7 +166,13 @@ async function process_responses() {
 
     if (text.length !== 0) {
       console.warn('unexpected chat response:', text);
-      await Chat.Message.create({ role: 'user', content: '[INVALID]' });
+      await Discord.channel.send({
+        content: text,
+        allowedMentions: {
+          roles: [],
+        }
+      }).catch(console.error);
+      // await Chat.Message.create({ role: 'user', content: '[BAD]' });
     }
   }
 
@@ -170,4 +195,4 @@ const cycle = async () => {
 }
 cycle();
 
-client.login(process.env.DISCORD_TOKEN);
+Discord.client.login(process.env.DISCORD_TOKEN);

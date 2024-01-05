@@ -7,6 +7,9 @@ export namespace Time {
   export let sent_last_time = false;
   export let sent_last_date = false;
 
+  const f_time = Intl.DateTimeFormat('en-UK', { timeStyle: 'medium', timeZone: 'UTC' });
+  const f_date = Intl.DateTimeFormat('en-UK', { dateStyle: 'short', timeZone: 'UTC' });
+
   {
     const now = Date.now();
     setTimeout(() => {
@@ -18,7 +21,7 @@ export namespace Time {
           if (sent_last_time) return;
           Chat.Message.create({
             role: 'user',
-            content: `[TIME ${Time.time()}]`,
+            content: `[TIME ${f_time.format(new Date())}]`,
           });
         })();
       }, 60_000);
@@ -36,15 +39,12 @@ export namespace Time {
           if (sent_last_date) return;
           Chat.Message.create({
             role: 'user',
-            content: `[DATE ${Time.time()}]`,
+            content: `[DATE ${f_date.format(new Date())}]`,
           });
         })();
       }, 24 * 60_000);
     }, next_day.valueOf() - now);
   }
-
-  const f_time = Intl.DateTimeFormat('en-UK', { timeStyle: 'medium', timeZone: 'UTC' });
-  const f_date = Intl.DateTimeFormat('en-UK', { dateStyle: 'short', timeZone: 'UTC' });
 
   export function time() {
     sent_last_time = true;
