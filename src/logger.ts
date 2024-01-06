@@ -12,18 +12,20 @@ export namespace Logger {
   const cur_log = path.join(loc, `${Date.now()}.json`);
   const messages: { role: 'user' | 'assistant' | 'function', content?: string | undefined, name?: string, function_call?: OpenAI.Beta.Threads.Runs.RequiredActionFunctionToolCall.Function }[] = [];
 
-  export function add_messages(list: OpenAI.Beta.Threads.ThreadMessagesPage) {
-    for (let i = list.data.length - 1; i >= 0; --i) {
-      const message = list.data[i]!;
-      for (const citem of message.content) {
-        if (citem.type !== 'text') continue;
+  export function add_assistant_message(content: string) {
+    messages.push({
+      role: 'assistant',
+      content,
+    });
 
-        messages.push({
-          role: message.role,
-          content: citem.text.value,
-        });
-      }
-    }
+    schedule_write();
+  }
+
+  export function add_user_message(msg: OpenAI.Beta.Threads.Messages.MessageCreateParams) {
+    messages.push({
+      role: msg.role,
+      content: msg.content,
+    });
 
     schedule_write();
   }

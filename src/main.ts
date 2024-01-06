@@ -68,6 +68,7 @@ async function process_responses() {
 
   for (let i = raw.length - 1; i !== -1; --i) {
     let text = raw[i]!;
+    Logger.add_assistant_message(text);
     console.log(i, text);
 
     loop: while (text[0] === '[') {

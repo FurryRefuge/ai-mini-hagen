@@ -50,6 +50,7 @@ export namespace Chat {
       ++count;
       console.debug('sent message', body);
       const msg = await openai.beta.threads.messages.create(thread_id, body);
+      Logger.add_user_message(body);
       --count;
       return msg;
     }
