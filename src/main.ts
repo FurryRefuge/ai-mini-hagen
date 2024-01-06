@@ -4,6 +4,7 @@ import { Data, data } from './data.js';
 import { Time } from './time.js';
 import { Logger } from './logger.js';
 import { Discord } from './discord.js';
+import { set_sleep, sleep_time } from './sleep.js';
 
 const did_info_command = new Set();
 const per_user_ratelimit = new Map();
@@ -47,11 +48,8 @@ Discord.client.on('messageCreate', message => {
   Chat.Message.create({ role: 'user', content: text });
 });
 
-let sleep_time = 0;
-
 async function process_responses() {
   const list = await Chat.Message.list(data.last_object_id ? { before: data.last_object_id } : undefined);
-  Logger.add_messages(list);
   const raw: string[] = [];
   data.last_object_id = list.data[0]?.id as string;
 
@@ -192,7 +190,7 @@ const cycle = async () => {
   }
 
   setTimeout(cycle, 8_000 + sleep_time);
-  sleep_time = 0;
+  set_sleep(0);
 }
 cycle();
 

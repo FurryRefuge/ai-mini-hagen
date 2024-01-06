@@ -1,6 +1,7 @@
 import type { OpenAI } from 'openai';
 import { Discord } from './discord.js';
 import type { Message } from 'discord.js';
+import { add_sleep_minutes } from './sleep.js';
 
 export namespace Functions {
   export const mapping = {};
@@ -21,6 +22,24 @@ export namespace Functions {
       get_current_date: {
         description: 'get current ISO 8601 date and time',
         call: () => JSON.stringify(new Date().toISOString()),
+      },
+
+      sleep: {
+        description: 'sleep for the specified amount of minutes',
+        parameters: {
+          type: 'object',
+          properties: {
+            minutes: {
+              type: 'number',
+              description: 'amount of minutes to sleep',
+            },
+          },
+          required: ['minutes'],
+        },
+        call: ({ minutes }) => {
+          if (!minutes) return Error.InvalidArgs;
+          return void add_sleep_minutes(+minutes);
+        },
       },
 
       react: {
