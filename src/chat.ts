@@ -105,7 +105,15 @@ export namespace Chat {
 
             const _ = async (call: OpenAI.Beta.Threads.Runs.RequiredActionFunctionToolCall) => {
               const func = Functions.mapping[call.function.name];
-              if (!func) return void console.error('incorrect function tool name', run);
+              if (!func) {
+                void console.error('incorrect function tool name', call);
+                tool_outputs.push({
+                  name: call.function.name,
+                  tool_call_id: call.id,
+                  output: 'error: invalid function',
+                })
+                return;
+              }
 
               const res = await func(JSON.parse(call.function.arguments));
 
