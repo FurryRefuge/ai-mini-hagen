@@ -1,4 +1,3 @@
-import type { TextChannel } from 'discord.js';
 import { Chat } from './chat.js';
 import { Data, data } from './data.js';
 import { Time } from './time.js';
@@ -68,110 +67,16 @@ async function process_responses() {
     let text = raw[i]!;
     Logger.add_assistant_message(text);
     console.log(i, text);
-
-    loop: while (text[0] === '[') {
-      const end = text.indexOf(']');
-      if (end === -1) break loop;
-      const parts = text.substring(1, end).split(' ');
-
-      switch (parts[0]) {
-        case 'OK': {
-          if (text !== '[OK]') break loop;
-          break;
-        }
-
-        case 'REPLY': {
-          if (parts.length !== 2) break loop;
-
-          const msg_id = parts[1]!;
-          const colon = text.indexOf(':', 1 + end);
-          if (colon === -1) break loop;
-          const content = text.substring(1 + colon);
-          text = text.substring(0, colon);
-          await (Discord.client.channels.cache.get('645783743423840277') as TextChannel).send({
-            reply: { messageReference: msg_id },
-            content,
-            allowedMentions: {
-              repliedUser: false,
-              roles: [],
-            }
-          }).catch(console.error);
-          break;
-        }
-
-        case 'SEND': {
-          if (parts.length !== 1) break loop;
-          const colon = text.indexOf(':', 1 + end);
-          if (colon === -1) break loop;
-          const content = text.substring(1 + colon);
-          text = text.substring(0, colon);
-          if (content.length === 0) break loop;
-
-          await (Discord.client.channels.cache.get('645783743423840277') as TextChannel).send({
-            content,
-            allowedMentions: {
-              roles: [],
-            }
-          }).catch(console.error);
-          break;
-        }
-
-        case 'SLEEP': {
-          if (parts.length !== 2) break loop;
-
-          const mins = +parts[1]!;
-          if (isNaN(mins)) break loop;
-          sleep_time += mins * 1_000 * 60;
-          break;
-        }
-
-        case 'REACT': {
-          if (parts.length !== 3) break loop;
-
-          const [, messageid, emoji] = parts as [string, string, string];
-          await (Discord.client.channels.cache.get('645783743423840277') as TextChannel).messages.cache.get(messageid)?.react(emoji)
-            .catch(console.error);
-          break;
-        }
-
-        case 'FLAG': {
-          if (parts.length !== 2) break loop;
-
-          const messageid = parts[1]!;
-          const colon = text.indexOf(':', 1 + end);
-          let content;
-          if (colon !== -1) {
-            content = text.substring(1 + colon);
-            text = text.substring(0, colon);
-          }
-
-          await (Discord.client.channels.cache.get('645783743423840277') as TextChannel).send({
-            content: `flagged this message.${content ? ` reason: ${content}` : ''}`,
-            reply: {
-              failIfNotExists: false,
-              messageReference: messageid,
-            },
-            allowedMentions: {
-              roles: [],
-              users: [],
-            }
-          }).catch(console.error);
-          break;
-        }
-      }
-
-      text = text.substring(1 + end).trimStart();
-    }
+    
+    if (text === '[OK]') continue;
 
     if (text.length !== 0) {
-      console.warn('unexpected chat response:', text);
       await Discord.channel.send({
         content: text,
         allowedMentions: {
           roles: [],
         }
       }).catch(console.error);
-      // await Chat.Message.create({ role: 'user', content: '[BAD]' });
     }
   }
 
